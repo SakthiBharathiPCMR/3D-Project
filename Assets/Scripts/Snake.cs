@@ -38,12 +38,12 @@ public class Snake : MonoBehaviour
             yield return new WaitForSeconds(waitTime);
 
             snakePositionList.Insert(0, transform.position);
-            MoveSnakeInPlaySpace();
 
             transform.position += directionOfSnake;
 
             transform.forward = directionOfSnake;
 
+            MoveSnakeInPlaySpace();
             UpdateBodyPosition();
 
         }
