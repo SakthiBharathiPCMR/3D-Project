@@ -12,7 +12,9 @@ public class Snake : MonoBehaviour
     private List<GameObject> snakeBodyList = new List<GameObject>();
     public List<Vector3> snakePositionList = new List<Vector3>();
     private Vector3 directionOfSnake;
-    private float waitTime = 0.2f;
+    private Vector3 updatedDir;
+    private float maxTime = 0.2f;
+    private float startTime = 0f;
 
 
     private void Start()
@@ -21,7 +23,6 @@ public class Snake : MonoBehaviour
 
         GrowSnake(5);
 
-        //   InvokeRepeating("MoveOneStep", 1, waitTime);
         StartCoroutine("HandleSnakeMovement");
     }
 
@@ -29,24 +30,30 @@ public class Snake : MonoBehaviour
     {
         HandleInput();
 
-    }
+        // HandleSnakeMovement();
 
-    private IEnumerator HandleSnakeMovement()
-    {
-        while (true)
+
+        if (Time.time - startTime > maxTime)
         {
-            yield return new WaitForSeconds(waitTime);
-
-            snakePositionList.Insert(0, transform.position);
-
-            transform.position += directionOfSnake;
-
-            transform.forward = directionOfSnake;
-
-            MoveSnakeInPlaySpace();
-            UpdateBodyPosition();
+            HandleSnakeMovement();
+            startTime = Time.time;
 
         }
+    }
+
+    private void HandleSnakeMovement()
+    {
+        updatedDir = directionOfSnake;
+        snakePositionList.Insert(0, transform.position);
+
+        transform.position += updatedDir;
+
+        transform.forward = updatedDir;
+
+        MoveSnakeInPlaySpace();
+        UpdateBodyPosition();
+
+
     }
 
     private void MoveSnakeInPlaySpace()
@@ -58,22 +65,18 @@ public class Snake : MonoBehaviour
         float snakeXPos = transform.position.x;
         float snakeZPos = transform.position.z;
 
-        if (snakeXPos > xRange)
+
+        if (snakeXPos > xRange || snakeXPos < -xRange)
         {
-            transform.position = new Vector3(-xRange, 0, snakeZPos);
+            transform.position = new Vector3(-snakeXPos, 0, snakeZPos);
         }
-        else if (snakeXPos < -xRange)
+        else if (snakeZPos > zRange || snakeZPos < -zRange)
         {
-            transform.position = new Vector3(xRange, 0, snakeZPos);
+            transform.position = new Vector3(snakeXPos, 0, -snakeZPos);
         }
-        else if (snakeZPos > zRange)
-        {
-            transform.position = new Vector3(snakeXPos, 0, -zRange);
-        }
-        else if (snakeZPos < -zRange)
-        {
-            transform.position = new Vector3(snakeXPos, 0, zRange);
-        }
+
+
+
     }
 
 
@@ -87,7 +90,6 @@ public class Snake : MonoBehaviour
             Vector3 point = snakePositionList[Mathf.Min(i, snakePositionList.Count - 1)];
             GameObject body = snakeBodyList[i];
             body.transform.position = new Vector3(point.x, Body_Y_Offset, point.z);
-
         }
 
         RemoveUsedPosition();
@@ -111,27 +113,17 @@ public class Snake : MonoBehaviour
 
         float verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (directionOfSnake != transform.forward) return;
+
+        if (Mathf.Abs(horizontalInput) > 0 && Mathf.Abs(updatedDir.x) <= Mathf.Epsilon)
+        {
+            directionOfSnake = Vector3.right * horizontalInput;
+        }
+        else if (Mathf.Abs(verticalInput) > 0 && Mathf.Abs(updatedDir.z) <= Mathf.Epsilon)
+        {
+            directionOfSnake = Vector3.forward * verticalInput;
+        }
 
 
-        if (horizontalInput > 0 && directionOfSnake.x != -1)
-        {
-            directionOfSnake = Vector3.right;
-        }
-        else if (horizontalInput < 0 && directionOfSnake.x != +1)
-        {
-            directionOfSnake = Vector3.left;
-
-        }
-        else if (verticalInput > 0 && directionOfSnake.z != -1)
-        {
-            directionOfSnake = Vector3.forward;
-
-        }
-        else if (verticalInput < 0 && directionOfSnake.z != +1)
-        {
-            directionOfSnake = Vector3.back;
-        }
     }
 
     public void GrowSnake(int count)
@@ -141,11 +133,11 @@ public class Snake : MonoBehaviour
             GameObject snakeBody = Instantiate(snakeBodyPrefab, bodyParentTransform);
             snakeBodyList.Add(snakeBody);
 
-           /* if (snakeBodyList.Count > 0)
+            if (snakeBodyList.Count > 0)
             {
                 int index = snakeBodyList.Count - 1;
                 snakeBody.transform.position = snakeBodyList[index].transform.position;
-            }*/
+            }
         }
 
     }
