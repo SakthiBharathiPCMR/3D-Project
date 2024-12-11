@@ -23,7 +23,6 @@ public class Snake : MonoBehaviour
 
         GrowSnake(5);
 
-        StartCoroutine("HandleSnakeMovement");
     }
 
     private void Update()
@@ -74,7 +73,6 @@ public class Snake : MonoBehaviour
         {
             transform.position = new Vector3(snakeXPos, 0, -snakeZPos);
         }
-
 
 
     }
@@ -146,7 +144,7 @@ public class Snake : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            StopCoroutine("HandleSnakeMovement");
+            //Stop Game
         }
     }
 
