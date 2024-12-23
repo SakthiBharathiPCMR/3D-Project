@@ -11,5 +11,6 @@ public class Collectable : MonoBehaviour
         gameObject.SetActive(false);
 
         GameManager.instance.FoodCollected();
+        
     }
 }

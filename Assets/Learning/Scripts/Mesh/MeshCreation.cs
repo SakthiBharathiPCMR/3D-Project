@@ -16,6 +16,13 @@ public class MeshCreation : MonoBehaviour
     {
         mesh = new Mesh();
 
+        CreateQuad();
+    }
+
+
+    private void CreateQuad()
+    {
+
         vertices = new Vector3[4];
 
         vertices[0] = new Vector3(0, 0, 0);
@@ -46,8 +53,5 @@ public class MeshCreation : MonoBehaviour
         mesh.triangles = triangles;
 
         GetComponent<MeshFilter>().mesh = mesh;
-
     }
-
-
 }
